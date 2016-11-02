@@ -46,31 +46,42 @@ namespace Grid_Second_Try
                 (dataGridView1.DataSource as DataTable).DefaultView.RowFilter = string.Format("University LIKE '*{0}*'", textBox1.Text);
             if (comboBox1.SelectedIndex == 5)
                 (dataGridView1.DataSource as DataTable).DefaultView.RowFilter = string.Format("Program LIKE '*{0}*'", textBox1.Text);
-            if (comboBox1.SelectedIndex == 6)
-                (dataGridView1.DataSource as DataTable).DefaultView.RowFilter = string.Format("convert(Balance, 'System.String') LIKE '*{0}*'", textBox1.Text);
 
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            textBox1.Text = String.Empty;
+            if (peopleDataSet.People.GetChanges() != null)
+            { 
+                DialogResult dialogResult = MessageBox.Show("Are you sure you want to save ALL changes to the grid?", "Confirmation", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    this.peopleTableAdapter.Update(this.peopleDataSet.People);
+                }
+            }
             Close();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e) // deletes search box contents and updates database if no changes were detected
         {
             textBox1.Text = String.Empty;
-            DialogResult dialogResult = MessageBox.Show("Are you sure you want to save ALL changes to the grid?", "Confirmation", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
+            if (peopleDataSet.People.GetChanges() != null)
             {
-                this.peopleTableAdapter.Update(this.peopleDataSet.People);
+                DialogResult dialogResult = MessageBox.Show("Do you want to save the changes you've made?", "Confirmation", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    this.peopleTableAdapter.Update(this.peopleDataSet.People);
+                }
             }
-            else if (dialogResult == DialogResult.No)
+            else
             {
-                //do something else
-            }           
+                MessageBox.Show("No chnages were detected.","Announcement");
+            }
+
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e) // deletes row if its not new
         {
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
             {
